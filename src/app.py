@@ -1,26 +1,21 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
-from flask import Flask
 import pandas as pd
-import numpy as np
 
-df = pd.read_csv('../data/matric-pass-rate.csv')
+df = pd.read_csv('../data/matric-pass-rate.csv').set_index('Province')
 
 app = dash.Dash()
 headers = df.columns
 
 
-# @app.callback(Output('graph-output-1', 'figure'),
-#               [Input('navigator', 'value')])
-def display_all():
+def tab_one():
     overall_table = [
         go.Table(
-            header=dict(values=df.columns),
-            cells=dict(values=[df['Province'], df['2009'], df['2010'], df['2011'], df['2012'], df['2013']])
+            header=dict(values=df.columns.insert(0, 'Provinces')),
+            cells=dict(values=[df.index, df['2009'], df['2010'], df['2011'], df['2012'], df['2013']])
         )
     ]
 
@@ -32,24 +27,31 @@ def display_all():
     }
 
 
-# @app.callback(Output('tabs-content-example', 'children'),
-#               [Input('navigator', 'value')])
+def tab_two():
+    return graph_bar()
+
+
 def graph_line():
 
-    line_graph = [
-        go.Scatter(
-            x=df['Province'],
-            y=df['2009'],
-            marker={
-                'size': 15,
-                'symbol': 'circle',
-                'line': {
-                    'width': 0.5,
-                    'color': 'white'
-                }
-            }
+    line_graph = []
+
+    for prov in df.index:
+        line_graph.append(
+            go.Scatter(
+                x=df.columns,
+                y=df.loc[prov],
+                marker={
+                    'size': 15,
+                    'symbol': 'circle',
+                    'line': {
+                        'width': 0.5,
+                        'color': 'white'
+                    }
+                },
+                name=prov
+            )
         )
-    ]
+
     return {
         'data': line_graph,
         'layout': go.Layout(
@@ -60,20 +62,23 @@ def graph_line():
     }
 
 
-def show_update():
+def graph_bar():
 
-    bar_graph = [
-        go.Bar(
-            x=df.Province.unique(),
-            y=df['2009']
-        )
-    ]
+    bar_graph = []
+
+    for x in range(2009, 2014):
+
+        bar_graph.append(go.Bar(
+            x=df.index,
+            y=df[str(x)],
+            name=str(x)
+        ))
 
     return {
         'data': bar_graph,
         'layout': go.Layout(
             xaxis={'title': 'Provinces'},
-            yaxis={'title': '2009'},
+            yaxis={'title': 'Percentages'},
         )
     }
 
@@ -83,36 +88,24 @@ app.title = 'Matric Pass Rate'
 app.layout = html.Div([
     dcc.Tabs(id='navigator', value='tab-overall', children=[
         dcc.Tab(label='Overall', value='tab-overall', children=[
-            dcc.Graph(id='graph-output-1')
+            dcc.Graph(
+                id='graph-output-1',
+                figure=tab_one()
+            )
         ]),
         dcc.Tab(id='breakdown', label='Breakdown', value='tab-breakdown', children=[
-            dcc.Graph(id='top-graph')
+            dcc.Graph(
+                id='top-graph',
+                figure=graph_bar()
+            ),
+            dcc.Graph(
+                id='line-graph',
+                figure=graph_line()
+            )
         ])
     ]),
     html.Div(id='tabs-content-example')
 ])
-
-
-@app.callback(Output('tabs-content-example', 'children'),
-              [Input('navigator', 'value')])
-def select_tab(tab):
-    if tab == 'tab-overall':
-        return display_all()
-    elif tab == 'tab-breakdown':
-        return html.Div([
-            html.H3('Tab content 2'),
-            dcc.Graph(
-                id='graph-2-tabs',
-                figure={
-                    'data': [{
-                        'x': [1, 2, 3],
-                        'y': [5, 10, 6],
-                        'type': 'bar'
-                    }]
-                }
-            )
-        ])
-
 
 # START POINT
 if __name__ == '__main__':
