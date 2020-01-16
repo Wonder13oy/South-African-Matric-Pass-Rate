@@ -49,8 +49,8 @@ def graph_line():
         'data': line_graph,
         'layout': go.Layout(
             title=f'Change in Pass Rate',
-            xaxis={'title': 'Province'},
-            yaxis={'title': 'Years'},
+            xaxis={'title': 'Years'},
+            yaxis={'title': 'Percentage'},
         )
     }
 
