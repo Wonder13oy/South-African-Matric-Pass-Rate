@@ -14,12 +14,7 @@ app = dash.Dash()
 app.title = 'Matric Pass Rate'
 app.layout = html.Div([
     dcc.Tabs(id='navigator', value='tab-overall', children=[
-        dcc.Tab(label='Overall', value='tab-overall', children=[
-            dcc.Graph(
-                id='graph-output-1',
-                figure=tab_one()
-            )
-        ]),
+        dcc.Tab(label='Overall', value='tab-overall', children=tab_one()),
         dcc.Tab(id='breakdown', label='Breakdown', value='tab-breakdown', children=[
             dcc.Graph(
                 id='top-graph',
@@ -28,11 +23,7 @@ app.layout = html.Div([
             dcc.Graph(
                 id='line-graph',
                 figure=graph_line()
-            ),
-            dcc.Graph(
-                id='hist-graph',
-                figure=graph_hist()
-            ),
+            )
         ])
     ])
 ])

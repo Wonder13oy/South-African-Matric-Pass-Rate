@@ -1,10 +1,24 @@
 import plotly.graph_objs as go
 import pandas as pd
+import dash_core_components as dcc
 
 df = pd.read_csv('../data/matric-pass-rate.csv').set_index('Province')
 
 
 def tab_one():
+    return [
+        dcc.Graph(
+            id='graph-output-1',
+            figure=results_table()
+        ),
+        dcc.Graph(
+            id='overall-pie',
+            figure=results_pie('National', '2009')
+        )
+    ]
+
+
+def results_table():
     overall_table = [
         go.Table(
             header=dict(values=df.columns.insert(0, 'Provinces')),
@@ -18,6 +32,52 @@ def tab_one():
             title='Table of pass rate over the years'
         )
     }
+
+
+def results_pie(level, year):
+    pass_rate = 0
+
+    if level == 'National':
+        pie_chart = [
+            go.Pie(
+                labels=df.index,
+                values=df[year]
+            )
+        ]
+
+        pass_rate = calculate_avg(df[year])
+
+        return {
+            'data': pie_chart,
+            'layout': go.Layout(
+                title=f'{level} average pass rate at {pass_rate}% in {year}'
+            )
+        }
+    else:
+        pie_chart = [
+            go.Pie(
+                labels=[level, 'other'],
+                values=[df[year][level], 100 - df[year][level]]
+            )
+        ]
+
+        pass_rate = df[year][level]
+
+        return {
+            'data': pie_chart,
+            'layout': go.Layout(
+                title=f'{level} average pass rate at {pass_rate}% in {year}'
+            )
+        }
+
+
+def calculate_avg(results_list):
+    result = 0
+
+    for x in results_list:
+        result += x
+
+    return round(result / 9, 1)
 
 
 def tab_two():
