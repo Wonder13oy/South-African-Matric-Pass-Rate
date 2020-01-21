@@ -6,7 +6,18 @@ df = pd.read_csv('../data/matric-pass-rate.csv').set_index('Province')
 
 
 def tab_one():
+    year_options = []
+    for year in df.columns:
+        year_options.append({'label': str(year), 'value': year})
+
     return [
+        dcc.Dropdown(
+            id='year-picker',
+            options=year_options,
+            value=df['2009'],
+            multi=True,
+            placeholder="Select a year",
+        ),
         dcc.Graph(
             id='graph-output-1',
             figure=results_table()
