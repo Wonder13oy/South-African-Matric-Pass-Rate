@@ -25,7 +25,6 @@ def tab_two():
 
 
 def graph_line():
-
     line_graph = []
 
     for prov in df.index:
@@ -56,11 +55,9 @@ def graph_line():
 
 
 def graph_bar():
-
     bar_graph = []
 
     for x in range(2009, 2014):
-
         bar_graph.append(go.Bar(
             x=df.index,
             y=df[str(x)],
@@ -72,5 +69,23 @@ def graph_bar():
         'layout': go.Layout(
             xaxis={'title': 'Provinces'},
             yaxis={'title': 'Percentages'},
+        )
+    }
+
+
+def graph_hist():
+    hist_graph = [
+        go.Histogram(
+            x=df['2009'],
+            y=df.columns,
+            xbins=20
+        )
+    ]
+
+    return {
+        'data': hist_graph,
+        'layout': go.Layout(
+            xaxis={'title': 'Percentages'},
+            yaxis={'title': 'Quantity'},
         )
     }

@@ -3,12 +3,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 from sys import path
+
 path.append('./controllers')
 
-from controllers.src_html import tab_one, graph_bar, graph_line
+from controllers.src_html import tab_one, graph_bar, graph_line, graph_hist
 
 app = dash.Dash()
-
 
 # HTML STRUCTURE
 app.title = 'Matric Pass Rate'
@@ -28,7 +28,11 @@ app.layout = html.Div([
             dcc.Graph(
                 id='line-graph',
                 figure=graph_line()
-            )
+            ),
+            dcc.Graph(
+                id='hist-graph',
+                figure=graph_hist()
+            ),
         ])
     ])
 ])
